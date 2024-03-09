@@ -10,12 +10,15 @@ services:
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_password
+      # WORDPRESS_DB_PASSWORD: wordpress
     volumes:
       # - wordpress:/var/www/html
       - ./html:/var/www/html
       - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    secrets:
+      - db_password
 
 
   db:
@@ -24,11 +27,22 @@ services:
     environment:
       MYSQL_DATABASE: wordpress
       MYSQL_USER: wordpress
-      MYSQL_PASSWORD: wordpress
-      MYSQL_ROOT_PASSWORD: wordpress
+      # MYSQL_PASSWORD: wordpress
+      # MYSQL_ROOT_PASSWORD: wordpress
+      MYSQL_PASSWORD_FILE: /run/secrets/db_password
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
     volumes:
       - db:/var/lib/mysql
       - ./mysql-init-files:/docker-entrypoint-initdb.d
+    secrets:
+      - db_password
+      - db_root_password
+
+secrets:
+   db_password:
+     file: ./run/secrets/db_password.txt
+   db_root_password:
+     file: ./run/secrets/db_root_password.txt
 
 volumes:
   wordpress:
