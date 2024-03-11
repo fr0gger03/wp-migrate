@@ -15,7 +15,8 @@ services:
       # WORDPRESS_DB_PASSWORD: wordpress
     volumes:
       # - wordpress:/var/www/html
-      - ./html:/var/www/html
+      # - ./html:/var/www/html
+      - ./wp-content:/var/www/html/wp-content
       - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     secrets:
       - db_password
