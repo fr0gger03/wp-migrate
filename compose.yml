@@ -7,8 +7,6 @@ services:
     environment:
       SOURCE_WP_DIR:
       SOURCE_SQL_DIR:
-      # SOURCE_WP_DIR: prod/wp-content
-      # SOURCE_SQL_DIR: prod/mysql-init-files
     volumes:
       - wpcontent:/target-wp
       - sqlinit:/target-sql
