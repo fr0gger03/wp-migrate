@@ -1,0 +1,8 @@
+from mysql:8.3.0 as base
+
+from base as test
+COPY ./test/mysql-init-files/testwordpress.sql /docker-entrypoint-initdb.d/
+
+from base as prod
+COPY ./prod/mysql-init-files/prodwordpress.sql /docker-entrypoint-initdb.d/
+

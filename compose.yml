@@ -1,6 +1,34 @@
 version: "3.8"
 
 services:
+  datamover:
+    image: thomastwyman557/wp-datamover:v1
+    restart: no 
+    environment:
+      SOURCE_WP_DIR:
+      SOURCE_SQL_DIR:
+      # SOURCE_WP_DIR: prod/wp-content
+      # SOURCE_SQL_DIR: prod/mysql-init-files
+    volumes:
+      - wpcontent:/target-wp
+      - sqlinit:/target-sql
+
+  db:
+    image: mysql:8.3.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD_FILE: /run/secrets/db_password
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+    depends_on:
+      - datamover
+    volumes:
+      - db:/var/lib/mysql
+      - sqlinit:/docker-entrypoint-initdb.d
+    secrets:
+      - db_password
+      - db_root_password
 
   wordpress:
     image: wordpress:6.4.3-php8.2-apache
@@ -13,25 +41,14 @@ services:
       WORDPRESS_DB_NAME: wordpress
       WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_password
     volumes:
-      - ./wp-content:/var/www/html/wp-content
+      - wordpress:/var/www/html
+      - wpcontent:/var/www/html/wp-content
       - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     secrets:
       - db_password
-
-  db:
-    image: mysql:8.3.0
-    restart: always
-    environment:
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD_FILE: /run/secrets/db_password
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
-    volumes:
-      - db:/var/lib/mysql
-      - ./mysql-init-files:/docker-entrypoint-initdb.d
-    secrets:
-      - db_password
-      - db_root_password
+    depends_on:
+      - datamover
+      - db
 
 secrets:
    db_password:
@@ -41,4 +58,6 @@ secrets:
 
 volumes:
   wordpress:
+  wpcontent:
   db:
+  sqlinit:

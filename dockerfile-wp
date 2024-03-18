@@ -1,0 +1,9 @@
+from wordpress:6.4.3-php8.2-apache as base
+COPY ./uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+
+from base as test
+COPY ./test/wp-content /var/www/html/wp-content
+
+from base as prod
+COPY ./prod/wp-content /var/www/html/wp-content
+
